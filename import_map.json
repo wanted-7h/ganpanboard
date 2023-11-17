@@ -1,0 +1,16 @@
+{
+	"imports": {
+		"$sqlite/": "https://deno.land/x/sqlite@v3.8/",
+		"$kysely/": "npm:/kysely@0.26.3/",
+		"$kysely_sqlite/": "https://gitlab.com/scarf005/kysely-deno-sqlite/-/raw/d3c7d40fa716d50a9499b3f4e67a8f7e9d819844/",
+		"$hono/": "https://deno.land/x/hono@v3.10.1/",
+		"$ts-rest/core": "https://esm.sh/@ts-rest/core@3.30.4/",
+		"$ts-rest/open-api": "https://esm.sh/@ts-rest/open-api@3.30.4/",
+		"$zod/": "https://deno.land/x/zod@v3.22.4/"
+	},
+	"scopes": {
+		"https://esm.sh/": {
+			"https://esm.sh/v134/zod@3.22.4/index.d.ts": "https://deno.land/x/zod@v3.22.4/mod.ts"
+		}
+	}
+}
