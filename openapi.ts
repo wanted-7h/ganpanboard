@@ -6,7 +6,7 @@ import {
 	statsContarct,
 	teamContract,
 	ticketContract,
-} from "./main.ts"
+} from "./contract.ts"
 import { swaggerUI } from "https://esm.sh/@hono/swagger-ui@0.1.0"
 import { generateOpenApiWithAuth } from "./openapi_auth.ts"
 
@@ -19,7 +19,7 @@ const apiContract = c.router({
 	stats: statsContarct,
 })
 
-const doc = generateOpenApiWithAuth(apiContract, {
+export const doc = generateOpenApiWithAuth(apiContract, {
 	info: {
 		title: "GanpanBoard API",
 		version: "0.0.1",
@@ -32,7 +32,6 @@ const doc = generateOpenApiWithAuth(apiContract, {
 		securitySchemes: { bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" } },
 	},
 })
-// mutateDocAddAuth({ bearerAuth: [] })(doc)
 
 if (import.meta.main) {
 	const app = new Hono()

@@ -4,6 +4,7 @@
 		"$kysely/": "npm:/kysely@0.26.3/",
 		"$kysely_sqlite/": "https://gitlab.com/scarf005/kysely-deno-sqlite/-/raw/d3c7d40fa716d50a9499b3f4e67a8f7e9d819844/",
 		"$hono/": "https://deno.land/x/hono@v3.10.1/",
+        "$hono-swagger-ui": "https://esm.sh/@hono/swagger-ui@0.1.0",
 		"$ts-rest/core": "https://esm.sh/@ts-rest/core@3.30.5/",
 		"$ts-rest/open-api": "https://esm.sh/@ts-rest/open-api@3.30.5/",
 		"$ts-rest-hono/": "https://raw.githubusercontent.com/scarf005/ts-rest-hono/97fa8a2daf7ce7526de211833b27ef77f8a7b14e/deno_dist/",
