@@ -10,7 +10,8 @@
 	},
 	"scopes": {
 		"https://esm.sh/": {
-			"https://esm.sh/v134/zod@3.22.4/index.d.ts": "https://deno.land/x/zod@v3.22.4/mod.ts"
+			"https://esm.sh/v134/zod@3.22.4/index.d.ts": "https://deno.land/x/zod@v3.22.4/mod.ts",
+			"https://esm.sh/v133/hono@3.9.2/dist/types/index.d.ts": "https://deno.land/x/hono@v3.10.1/mod.ts"
 		}
 	}
 }
