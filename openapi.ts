@@ -1,7 +1,7 @@
 import { initContract } from "$ts-rest/core"
 import { Hono } from "$hono/mod.ts"
 import { generateOpenApi } from "$ts-rest/open-api"
-import { authContract, columnsContract, teamContract, ticketContract } from "./main.ts"
+import { authContract, columnsContract, statsContarct, teamContract, ticketContract } from "./main.ts"
 import { swaggerUI } from "https://esm.sh/@hono/swagger-ui@0.1.0"
 
 const c = initContract()
@@ -10,6 +10,7 @@ const apiContract = c.router({
 	team: teamContract,
 	column: columnsContract,
 	ticket: ticketContract,
+	stats: statsContarct,
 })
 
 const doc = generateOpenApi(apiContract, {

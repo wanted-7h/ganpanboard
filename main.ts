@@ -57,16 +57,20 @@ export const teamContract = c.router({
 		}),
 		responses: { 201: null },
 	},
-}, baseHeaders)
+}, {
+	...baseHeaders,
+	pathPrefix: "/team",
+})
 
-export const naturalSchema = z.number().int().positive()
+export const positiveSchema = z.number().positive()
+export const naturalSchema = positiveSchema.int()
 export const idSchema = z.string().uuid()
-
+export const tagSchema = z.enum(["Frontend", "Backend", "Design", "QA", "PM", "Document"])
 const ticketSchema = z.object({
 	title: z.string(),
 	position: naturalSchema,
-	tag: z.enum(["Frontend", "Backend", "Design", "QA", "PM", "Document"]),
-	hours: z.number().positive(),
+	tag: tagSchema,
+	hours: positiveSchema,
 	until: z.date(),
 	assignee: idSchema.optional(),
 })
@@ -143,4 +147,45 @@ export const columnsContract = c.router({
 }, {
 	...baseHeaders,
 	pathPrefix: "/{board}",
+})
+
+export const columnsSchema = z.string()
+	.regex(/^\d+(,\d+)*$/, `"1" 또는 "1,2,3" 형태로 입력해주세요.`)
+	.transform((v) => v.split(",").map(Number))
+
+export const statQuerySchema = z.object({
+	columns: columnsSchema,
+	begin: z.date(),
+	end: z.date(),
+}).partial()
+
+export const statEntrySchema = z.object({
+	id: idSchema,
+	name: z.string(),
+	totalHours: positiveSchema.describe("작업시간 합"),
+	contribution: z.number().describe("기여도"),
+})
+
+export const statsContarct = c.router({
+	oneMember: {
+		method: "GET",
+		path: "/{user}",
+		query: statQuerySchema,
+		responses: {
+			200: z.array(statEntrySchema),
+		},
+	},
+	allMembers: {
+		method: "GET",
+		path: "/",
+		query: statQuerySchema.extend({
+			tag: tagSchema,
+		}),
+		responses: {
+			200: z.array(statEntrySchema),
+		},
+	},
+}, {
+	...baseHeaders,
+	pathPrefix: "/{board}/stats",
 })
