@@ -1,8 +1,14 @@
 import { initContract } from "$ts-rest/core"
 import { Hono } from "$hono/mod.ts"
-import { generateOpenApi } from "$ts-rest/open-api"
-import { authContract, columnsContract, statsContarct, teamContract, ticketContract } from "./main.ts"
+import {
+	authContract,
+	columnsContract,
+	statsContarct,
+	teamContract,
+	ticketContract,
+} from "./main.ts"
 import { swaggerUI } from "https://esm.sh/@hono/swagger-ui@0.1.0"
+import { generateOpenApiWithAuth } from "./openapi_auth.ts"
 
 const c = initContract()
 const apiContract = c.router({
@@ -13,7 +19,7 @@ const apiContract = c.router({
 	stats: statsContarct,
 })
 
-const doc = generateOpenApi(apiContract, {
+const doc = generateOpenApiWithAuth(apiContract, {
 	info: {
 		title: "GanpanBoard API",
 		version: "0.0.1",
@@ -22,7 +28,11 @@ const doc = generateOpenApi(apiContract, {
 			url: "https://spdx.org/licenses/AGPL-3.0-only.html",
 		},
 	},
+	components: {
+		securitySchemes: { bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" } },
+	},
 })
+// mutateDocAddAuth({ bearerAuth: [] })(doc)
 
 if (import.meta.main) {
 	const app = new Hono()
