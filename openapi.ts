@@ -1,8 +1,11 @@
-import { initContract } from "$ts-rest/core"
 import { Hono } from "$hono/mod.ts"
-import { generateOpenApi } from "$ts-rest/open-api"
-import { authContract, columnsContract, statsContarct, teamContract, ticketContract } from "./main.ts"
-import { swaggerUI } from "https://esm.sh/@hono/swagger-ui@0.1.0"
+import { swaggerUI } from "$hono-swagger-ui"
+import { OpenAPIObject } from "$openapi3-ts/index.d.ts"
+import { initContract } from "$ts-rest/core"
+
+import { columnsContract, statsContarct, teamContract, ticketContract } from "./contract.ts"
+import { authContract } from "./auth/mod.ts"
+import { generateOpenApiWithAuth } from "./openapi_auth.ts"
 
 const c = initContract()
 const apiContract = c.router({
@@ -13,7 +16,7 @@ const apiContract = c.router({
 	stats: statsContarct,
 })
 
-const doc = generateOpenApi(apiContract, {
+export const doc = generateOpenApiWithAuth(apiContract, {
 	info: {
 		title: "GanpanBoard API",
 		version: "0.0.1",
@@ -22,12 +25,33 @@ const doc = generateOpenApi(apiContract, {
 			url: "https://spdx.org/licenses/AGPL-3.0-only.html",
 		},
 	},
+	components: {
+		securitySchemes: { bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" } },
+	},
 })
 
-if (import.meta.main) {
-	const app = new Hono()
-		.get("/openapi.json", (c) => c.json(doc))
-		.get("/openapi", swaggerUI({ url: "/openapi.json" }))
+const manuallySwaggerUIHtml = (asset: { css: string[]; js: string[] }) => /*html*/ `
+    <div>
+        <div id="swagger-ui"></div>
+        ${asset.css.map((url) => /*html*/ `<link rel="stylesheet" href="${url}" />`)}
+        ${asset.js.map((url) => /*html*/ `<script src="${url}" crossorigin="anonymous"></script>`)}
+        <script>
+            window.onload = () => {
+                window.ui = SwaggerUIBundle({
+                    dom_id: '#swagger-ui',
+                    url: '/openapi.json',
+                    persistAuthorization: true,
+                })
+            }
+        </script>
+    </div>
+    `
 
-	Deno.serve(app.fetch)
+export const apiRouter = (doc: OpenAPIObject) =>
+	new Hono()
+		.get("/openapi.json", (c) => c.json(doc))
+		.get("/openapi", swaggerUI({ url: "/openapi.json", manuallySwaggerUIHtml }))
+
+if (import.meta.main) {
+	Deno.serve(apiRouter(doc).fetch)
 }
