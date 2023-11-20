@@ -9,9 +9,8 @@ const expireAge = 1 * hours
 
 import env from "./.env.json" with { type: "json" }
 import { Hono } from "$hono/mod.ts"
-import { swaggerUI } from "$hono-swagger-ui"
-import { doc } from "./openapi.ts"
-import { authContract } from "./contract.ts"
+import { apiRouter, doc } from "./openapi.ts"
+import { authContract } from "./authSchema.ts"
 
 export type JwtPayload = {
 	iat: number
@@ -61,9 +60,7 @@ export const authRouter = s.router(authContract, {
 
 const app = new Hono()
 
-app
-	.get("/openapi.json", (c) => c.json(doc))
-	.get("/openapi", swaggerUI({ url: "/openapi.json" }))
+app.route("", apiRouter(doc))
 
 createHonoEndpoints(authContract, authRouter, app)
 
