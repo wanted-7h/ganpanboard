@@ -4,7 +4,7 @@ import { OpenAPIObject } from "$openapi3-ts/index.d.ts"
 import { initContract } from "$ts-rest/core"
 
 import { columnsContract, statsContarct, teamContract, ticketContract } from "./contract.ts"
-import { authContract } from "./authSchema.ts"
+import { authContract } from "./auth/mod.ts"
 import { generateOpenApiWithAuth } from "./openapi_auth.ts"
 
 const c = initContract()
@@ -30,28 +30,27 @@ export const doc = generateOpenApiWithAuth(apiContract, {
 	},
 })
 
+const manuallySwaggerUIHtml = (asset: { css: string[]; js: string[] }) => /*html*/ `
+    <div>
+        <div id="swagger-ui"></div>
+        ${asset.css.map((url) => /*html*/ `<link rel="stylesheet" href="${url}" />`)}
+        ${asset.js.map((url) => /*html*/ `<script src="${url}" crossorigin="anonymous"></script>`)}
+        <script>
+            window.onload = () => {
+                window.ui = SwaggerUIBundle({
+                    dom_id: '#swagger-ui',
+                    url: '/openapi.json',
+                    persistAuthorization: true,
+                })
+            }
+        </script>
+    </div>
+    `
+
 export const apiRouter = (doc: OpenAPIObject) =>
 	new Hono()
 		.get("/openapi.json", (c) => c.json(doc))
-		.get("/openapi", swaggerUI({
-            url: "/openapi.json",
-            manuallySwaggerUIHtml: (asset) => /*html*/`
-            <div>
-                <div id="swagger-ui"></div>
-                ${asset.css.map((url) => `<link rel="stylesheet" href="${url}" />`)}
-                ${asset.js.map((url) => `<script src="${url}" crossorigin="anonymous"></script>`)}
-                <script>
-                    window.onload = () => {
-                        window.ui = SwaggerUIBundle({
-                            dom_id: '#swagger-ui',
-                            url: '/openapi.json',
-                            persistAuthorization: true,
-                        })
-                    }
-                </script>
-            </div>
-            `
-    }))
+		.get("/openapi", swaggerUI({ url: "/openapi.json", manuallySwaggerUIHtml }))
 
 if (import.meta.main) {
 	Deno.serve(apiRouter(doc).fetch)
