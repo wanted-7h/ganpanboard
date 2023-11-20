@@ -1,0 +1,54 @@
+model User {
+    id       String @id @default(uuid())
+    name     String @unique
+    password String
+
+    tickets Ticket[]
+    teams   Team[]   @relation("teamMembers")
+    leading Team[]   @relation("teamLeaders")
+}
+
+enum Role {
+    LEADER
+    MEMBER
+}
+
+enum Tag {
+    Frontend
+    Backend
+    Design
+    QA
+    PM
+    Document
+}
+
+model Ticket {
+    id    String   @id @default(uuid())
+    tag   Tag
+    hours Float
+    until DateTime
+
+    assignee   User?   @relation(fields: [assigneeId], references: [id])
+    assigneeId String?
+
+    column   Column @relation(fields: [columnId], references: [id])
+    columnId String
+}
+
+model Column {
+    id   String @id @default(uuid())
+    name String
+
+    team    Team     @relation(fields: [teamId], references: [id])
+    teamId  String
+    tickets Ticket[]
+}
+
+model Team {
+    id   String @id @default(uuid())
+    name String @unique
+
+    columns Column[]
+    members User[]   @relation("teamMembers")
+    leaders User[]   @relation("teamLeaders")
+}
